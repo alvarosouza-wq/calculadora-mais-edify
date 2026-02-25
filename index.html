@@ -909,6 +909,17 @@
         <div class="benefit-list" id="current-benefits-list"></div>
       </div>
 
+      <!-- Informações adicionais — shown only when filled -->
+      <div id="extra-info-card" style="display:none;background:#ffffff;border-radius:16px;padding:1.75rem;border:1px solid rgba(66,25,181,0.1);">
+        <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#999;margin-bottom:0.6rem;">📝 Informações adicionais</div>
+        <div id="extra-info-text" style="font-size:0.92rem;color:#242426;line-height:1.65;white-space:pre-wrap;font-family:'Ubuntu',sans-serif;"></div>
+      </div>
+
+      <!-- Validity footer — shown only when filled -->
+      <div id="validity-footer" style="display:none;text-align:right;padding:0.25rem 0.25rem 0;">
+        <span style="font-size:0.78rem;color:#aaa;">Validade da simulação: <strong id="validity-date-text" style="font-weight:600;"></strong></span>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1206,19 +1217,31 @@ document.getElementById('bonus').addEventListener('input', e => {
 });
 
 // ============================================================
-// SCHOOL NAME
+// SCHOOL NAME / EXTRA INFO / VALIDITY
 // ============================================================
-let schoolName = '';
+let schoolName   = '';
+let extraInfoVal = '';
+let validityVal  = '';
 
 function applySchoolName(name) {
   schoolName = name.trim();
   const el = document.getElementById('level-school');
-  if (schoolName) {
-    el.textContent = schoolName;
-    el.style.display = 'block';
-  } else {
-    el.style.display = 'none';
-  }
+  el.textContent = schoolName;
+  el.style.display = schoolName ? 'block' : 'none';
+}
+
+function applyExtraInfo(text) {
+  extraInfoVal = text.trim();
+  const card = document.getElementById('extra-info-card');
+  document.getElementById('extra-info-text').textContent = extraInfoVal;
+  card.style.display = extraInfoVal ? 'block' : 'none';
+}
+
+function applyValidity(dateStr) {
+  validityVal = dateStr.trim();
+  const footer = document.getElementById('validity-footer');
+  document.getElementById('validity-date-text').textContent = validityVal;
+  footer.style.display = validityVal ? 'block' : 'none';
 }
 
 // ============================================================
@@ -1236,9 +1259,11 @@ function triggerDownload(format) {
   title.textContent = format === 'pdf' ? '📄 Baixar PDF' : '🖼 Baixar Imagem';
   confirmBtn.textContent = format === 'pdf' ? 'Gerar PDF' : 'Gerar imagem';
   confirmBtn.className = 'modal-btn confirm' + (format === 'pdf' ? ' pdf' : '');
-  input.value = schoolName; // pre-fill with last used name
+  document.getElementById('school-name-input').value = schoolName;
+  document.getElementById('extra-info-input').value   = extraInfoVal;
+  document.getElementById('validity-input').value     = validityVal;
   modal.classList.add('open');
-  setTimeout(() => input.focus(), 100);
+  setTimeout(() => document.getElementById('school-name-input').focus(), 100);
 }
 
 function closeModal() {
@@ -1246,8 +1271,9 @@ function closeModal() {
 }
 
 function confirmDownload() {
-  const name = document.getElementById('school-name-input').value;
-  applySchoolName(name);
+  applySchoolName(document.getElementById('school-name-input').value);
+  applyExtraInfo(document.getElementById('extra-info-input').value);
+  applyValidity(document.getElementById('validity-input').value);
   closeModal();
 
   if (pendingFormat === 'pdf') {
@@ -1262,10 +1288,22 @@ document.getElementById('school-modal').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
 
-// Allow Enter key to confirm
+// Keyboard shortcuts
 document.getElementById('school-name-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') confirmDownload();
   if (e.key === 'Escape') closeModal();
+});
+document.getElementById('validity-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') confirmDownload();
+  if (e.key === 'Escape') closeModal();
+});
+
+// Date mask: auto-insert slashes (dd/mm/aaaa)
+document.getElementById('validity-input').addEventListener('input', function() {
+  let v = this.value.replace(/[^0-9]/g, '').slice(0, 8);
+  if (v.length >= 5) v = v.slice(0,2) + '/' + v.slice(2,4) + '/' + v.slice(4);
+  else if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+  this.value = v;
 });
 
 // ============================================================
@@ -1370,9 +1408,17 @@ update();
 <div class="modal-overlay" id="school-modal">
   <div class="modal-box">
     <div class="modal-title" id="modal-title">📥 Baixar Simulação</div>
-    <div class="modal-subtitle">Informe o nome da escola para personalizar o relatório. Este campo é opcional.</div>
+    <div class="modal-subtitle">Todos os campos são opcionais.</div>
+
     <label class="modal-label" for="school-name-input">Nome da escola</label>
     <input class="modal-input" type="text" id="school-name-input" placeholder="Ex: Colégio São Paulo" maxlength="60" autocomplete="off">
+
+    <label class="modal-label" for="extra-info-input">Informações adicionais</label>
+    <textarea class="modal-input" id="extra-info-input" rows="3" placeholder="Ex.: Expansão para o 7º ano e vigência até 2029" style="resize:vertical;font-family:'Ubuntu',sans-serif;line-height:1.5;"></textarea>
+
+    <label class="modal-label" for="validity-input">Validade da simulação</label>
+    <input class="modal-input" type="text" id="validity-input" placeholder="dd/mm/aaaa" maxlength="10" inputmode="numeric" autocomplete="off">
+
     <div class="modal-actions">
       <button class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
       <button class="modal-btn confirm" id="modal-confirm-btn" onclick="confirmDownload()">Gerar imagem</button>

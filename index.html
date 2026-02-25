@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Mais Edify 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --primary: #4219B5;
+    --primary-light: #5c2fd6;
+    --secondary: #FF2726;
+    --accent: #ffc20e;
+    --teal: #00AA9E;
+    --sky: #4CD1F6;
+    --text: #242426;
+    --bg: #F2F2F2;
+    --white: #ffffff;
+    --border: rgba(66,25,181,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Ubuntu', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  header {
+    background: var(--primary);
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+  }
+
+  .logo {
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-badge {
+    background: var(--accent);
+    color: var(--text);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  .header-subtitle {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .app-wrapper {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    min-height: calc(100vh - 68px);
+  }
+
+  /* LEFT PANEL */
+  .left-panel {
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    padding: 2rem;
+    overflow-y: auto;
+    position: sticky;
+    top: 68px;
+    height: calc(100vh - 68px);
+  }
+
+  .panel-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .input-group { margin-bottom: 1.5rem; }
+
+  .input-group > label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .input-group .hint {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .checkbox-row:hover:not(.disabled) { border-color: var(--primary); }
+  .checkbox-row.checked { border-color: var(--primary); background: rgba(66,25,181,0.06); }
+  .checkbox-row.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+  .checkbox-row input[type="checkbox"] { display: none; }
+
+  .custom-check {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 2px solid #ccc;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .checked .custom-check { background: var(--primary); border-color: var(--primary); }
+  .custom-check svg { display: none; }
+  .checked .custom-check svg { display: block; }
+
+  .check-label { flex: 1; font-size: 0.9rem; font-weight: 500; }
+
+  .check-pts {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    background: rgba(66,25,181,0.1);
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+    transition: border-color 0.2s;
+    background: var(--bg);
+    outline: none;
+  }
+
+  input[type="number"]:focus { border-color: var(--primary); background: white; }
+
+  .vigencia-options { display: grid; gap: 10px; }
+
+  .vigencia-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--bg);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .vigencia-input-row.active { border-color: var(--primary); background: rgba(66,25,181,0.04); }
+
+  .vigencia-input-row label {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .vigencia-input-row input[type="number"] {
+    width: 70px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+
+  .radio-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .vigencia-input-row.active .radio-dot { border-color: var(--primary); background: var(--primary); }
+  .vigencia-input-row.active .radio-dot::after {
+    content: '';
+    width: 7px; height: 7px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  .bonus-group {
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(255,194,14,0.15), rgba(66,25,181,0.08));
+    border-radius: 12px;
+    border: 2px solid rgba(255,194,14,0.4);
+  }
+
+  .bonus-group > label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .bonus-input-row { display: flex; gap: 10px; align-items: center; }
+  .bonus-input-row input { flex: 1; }
+
+  /* RIGHT PANEL */
+  .right-panel { padding: 2rem 2.5rem; overflow-y: auto; }
+
+  #dashboard { display: grid; gap: 1.25rem; }
+
+  /* Level Card */
+  .level-card {
+    background: var(--primary);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .level-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .level-card::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 40px;
+    width: 150px; height: 150px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .level-card-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+
+  .level-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+
+  .level-name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .level-desc { font-size: 0.85rem; opacity: 0.75; }
+
+  .level-icon-big {
+    font-size: 4rem;
+    opacity: 0.9;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  }
+
+  .metrics-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+
+  /* Saldo Card */
+  .saldo-card {
+    background: linear-gradient(135deg, var(--accent) 0%, #ffda6b 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .saldo-card::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+  }
+
+  .saldo-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(36,36,38,0.7);
+    margin-bottom: 0.5rem;
+  }
+
+  .saldo-value {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .saldo-unit { font-size: 1rem; font-weight: 500; opacity: 0.6; margin-top: 4px; }
+
+  .bonus-display-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 2px solid var(--border);
+  }
+
+  .bonus-display-card .sub-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 0.5rem;
+  }
+
+  .base-pts { font-size: 1.1rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .bonus-pts { font-size: 0.85rem; color: var(--teal); font-weight: 500; }
+
+  .bonus-pct-tag {
+    display: inline-block;
+    background: rgba(0,170,158,0.12);
+    color: var(--teal);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 6px;
+  }
+
+  /* Progress Card */
+  .progress-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+  }
+
+  .progress-card-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 1.25rem;
+  }
+
+  .progress-markers {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .prog-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transition: color 0.3s;
+    width: 20%;
+    text-align: center;
+    gap: 1px;
+  }
+
+  .prog-marker .m-icon { font-size: 1.1rem; }
+  .prog-marker .m-name { font-size: 0.62rem; line-height: 1.2; }
+  .prog-marker .m-pts { font-size: 0.58rem; opacity: 0.85; }
+
+  .prog-marker.passed { color: var(--teal); }
+  .prog-marker.active { color: var(--primary); }
+
+  .progress-bar-container {
+    height: 14px;
+    background: #eee;
+    border-radius: 100px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, var(--primary), var(--sky));
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+
+  .progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 8px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 0 100px 100px 0;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; }
+  }
+
+  .progress-info { display: flex; justify-content: space-between; font-size: 0.8rem; }
+  .prog-current { color: var(--primary); font-weight: 700; }
+  .prog-next { color: #888; font-size: 0.78rem; }
+
+  /* Benefit Cards */
+  .next-level-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+  }
+
+  .current-benefits-card {
+    background: linear-gradient(135deg, rgba(0,170,158,0.08), rgba(76,209,246,0.08));
+    border-radius: 16px;
+    padding: 1.75rem;
+    border: 1px solid rgba(0,170,158,0.2);
+  }
+
+  .benefit-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  .benefit-card-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #999;
+  }
+
+  .benefit-card-title.teal { color: var(--teal); }
+
+  .level-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .level-tag.red { background: rgba(255,39,38,0.1); color: var(--secondary); }
+  .level-tag.teal { background: rgba(0,170,158,0.15); color: var(--teal); }
+
+  .benefit-list { display: grid; gap: 8px; }
+
+  .benefit-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--bg);
+    border-radius: 10px;
+    font-size: 0.85rem;
+    transition: transform 0.15s;
+  }
+
+  .benefit-item:hover { transform: translateX(2px); }
+
+  .benefit-item-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+
+  .benefit-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .benefit-pts-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #aaa;
+  }
+
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e0e0e0;
+  }
+
+  .no-benefits {
+    text-align: center;
+    padding: 1.5rem;
+    color: #bbb;
+    font-size: 0.85rem;
+  }
+
+  /* Level gradients */
+  .level-platinum { background: linear-gradient(135deg, #1a0a7a, #4219B5, #7c3aed); }
+  .level-gold     { background: linear-gradient(135deg, #92400e, #b45309, #d97706); }
+  .level-silver   { background: linear-gradient(135deg, #374151, #4b5563, #6b7280); }
+  .level-bronze   { background: linear-gradient(135deg, #78350f, #92400e, #b45309); }
+  .level-standard { background: linear-gradient(135deg, #4219B5, #5c2fd6); }
+
+  .fade-in { animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .download-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .download-btn:hover {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(66,25,181,0.3);
+  }
+
+  .download-btn:active { transform: translateY(0); }
+
+  .download-btn.secondary { background: var(--secondary); }
+  .download-btn.secondary:hover {
+    background: #e01f1e;
+    box-shadow: 0 8px 24px rgba(255,39,38,0.3);
+  }
+
+  .lock-hint {
+    font-size: 0.75rem;
+    color: var(--secondary);
+    margin-top: 6px;
+    display: none;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 420px;
+    max-width: 90vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.92) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .modal-subtitle {
+    font-size: 0.82rem;
+    color: #888;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+  }
+
+  .modal-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .modal-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 1.5rem;
+  }
+
+  .modal-input:focus { border-color: var(--primary); background: white; }
+
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  .modal-btn {
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .modal-btn.cancel {
+    background: var(--bg);
+    color: #666;
+    border: 1px solid #ddd;
+  }
+
+  .modal-btn.cancel:hover { background: #e8e8e8; }
+
+  .modal-btn.confirm {
+    background: var(--primary);
+    color: white;
+  }
+
+  .modal-btn.confirm:hover {
+    background: var(--primary-light);
+    box-shadow: 0 4px 16px rgba(66,25,181,0.3);
+  }
+
+  .modal-btn.confirm.pdf { background: var(--secondary); }
+  .modal-btn.confirm.pdf:hover {
+    background: #e01f1e;
+    box-shadow: 0 4px 16px rgba(255,39,38,0.3);
+  }
+
+  @media (max-width: 900px) {
+    .app-wrapper { grid-template-columns: 1fr; }
+    .left-panel { position: relative; top: 0; height: auto; }
+    .metrics-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    ✦ Mais Edify
+    <span class="logo-badge">2026</span>
+  </div>
+  <div class="header-subtitle">Simulador de Benefícios · Customer Success</div>
+</header>
+
+<div class="app-wrapper">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="panel-title">Parâmetros da Simulação</div>
+
+    <!-- Expansão (orgânica checkbox) -->
+    <div class="input-group">
+      <label>Expansão</label>
+      <div class="checkbox-row" id="organico-row" onclick="toggleCheck('organico')">
+        <input type="checkbox" id="organico">
+        <div class="custom-check">
+          <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+            <path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="check-label">Expansão Orgânica</span>
+        <span class="check-pts">+1.000 pts</span>
+      </div>
+      <div class="lock-hint" id="organico-hint">⚠ Desabilitado: há expansão inorgânica preenchida</div>
+    </div>
+
+    <!-- Expansão Inorgânica -->
+    <div class="input-group">
+      <label>Expansão Inorgânica</label>
+      <input type="number" id="inorganica" min="0" value="" placeholder="Qtd. de anos escolares">
+      <div class="hint">Cada ano escolar = +2.000 pts</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Vigência -->
+    <div class="input-group">
+      <label>Vigência do Contrato</label>
+      <div class="vigencia-options">
+
+        <div class="vigencia-input-row" id="vig-1-row" onclick="setVigencia(1)">
+          <div class="radio-dot"></div>
+          <label>1 ano de contrato</label>
+          <span class="check-pts">+500 pts</span>
+        </div>
+
+        <div class="vigencia-input-row" id="vig-n-row" onclick="setVigencia('n')">
+          <div class="radio-dot"></div>
+          <label>2 anos ou mais</label>
+          <input type="number" id="vig-anos" min="2" value="2" onclick="event.stopPropagation();" style="width:70px;padding:6px 10px;font-size:0.9rem;">
+          <span class="check-pts" id="vig-n-pts">+1.500 pts</span>
+        </div>
+
+      </div>
+      <div class="hint" style="margin-top:8px">Selecione nenhum, 1 ano ou 2+ anos.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Bônus -->
+    <div class="input-group">
+      <div class="bonus-group">
+        <label>⚡ Bônus Adicional</label>
+        <div class="bonus-input-row">
+          <input type="number" id="bonus" min="0" max="9999" value="0" placeholder="0">
+          <span style="font-size:1.2rem;font-weight:700;color:#888">%</span>
+        </div>
+        <div class="hint" style="margin-top:6px">Ex: 10% → total ×1,10 &nbsp;|&nbsp; 100% → total ×2</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div style="display:grid;gap:10px;">
+      <button class="download-btn" id="download-png-btn" onclick="triggerDownload('png')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        Baixar imagem
+      </button>
+      <button class="download-btn secondary" id="download-pdf-btn" onclick="triggerDownload('pdf')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        Baixar PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div id="dashboard">
+
+      <!-- Identity Card (white) -->
+      <div style="background:#ffffff;border-radius:20px;padding:1.75rem 2rem;border:1px solid rgba(66,25,181,0.1);">
+        <div style="font-size:2.8rem;font-weight:700;line-height:1;color:#242426;letter-spacing:-0.01em;">Mais Edify</div>
+        <div id="level-school" style="display:none;font-size:2.5rem;font-weight:700;line-height:1;color:#242426;margin-top:0.4rem;"></div>
+      </div>
+
+      <!-- Level Card -->
+      <div class="level-card level-standard" id="level-card">
+        <div class="level-card-inner">
+          <div>
+            <div class="level-badge" id="level-badge">🎯 Nível Atual</div>
+            <div class="level-name" id="level-name">Standard</div>
+            <div class="level-desc" id="level-desc">O ponto de partida da sua jornada Edify</div>
+          </div>
+          <div class="level-icon-big" id="level-icon">⭐</div>
+        </div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics-row">
+        <div class="saldo-card">
+          <div class="saldo-label">💰 Saldo de Pontos</div>
+          <div class="saldo-value" id="saldo-value">0</div>
+          <div class="saldo-unit">pontos</div>
+        </div>
+        <div class="bonus-display-card">
+          <div class="sub-label">📊 Breakdown</div>
+          <div class="base-pts" id="base-pts-display">Base: 0 pts</div>
+          <div class="bonus-pts" id="bonus-pts-display" style="display:none">Bônus: +0 pts</div>
+          <div class="bonus-pct-tag" id="bonus-pct-display" style="display:none">+0%</div>
+        </div>
+      </div>
+
+      <!-- Progress Card -->
+      <div class="progress-card">
+        <div class="progress-card-title">📈 Progresso de Nível</div>
+        <div class="progress-markers" id="prog-markers"></div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="prog-bar" style="width:0%"></div>
+        </div>
+        <div class="progress-info">
+          <span class="prog-current" id="prog-current">0 pts</span>
+          <span class="prog-next" id="prog-next-info"></span>
+        </div>
+      </div>
+
+      <!-- Next Level Unlocks -->
+      <div class="next-level-card" id="next-level-card">
+        <div class="benefit-card-header">
+          <div class="benefit-card-title">🔒 Desbloqueios no Próximo Nível</div>
+          <div class="level-tag red" id="next-level-tag">Bronze</div>
+        </div>
+        <div class="benefit-list" id="next-benefits-list"></div>
+      </div>
+
+      <!-- Current Benefits -->
+      <div class="current-benefits-card">
+        <div class="benefit-card-header">
+          <div class="benefit-card-title teal">✅ Benefícios Disponíveis Agora</div>
+          <div class="level-tag teal" id="current-level-tag">Standard</div>
+        </div>
+        <div class="benefit-list" id="current-benefits-list"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const LEVELS = [
+  { name: 'Standard', min: 0,    cls: 'level-standard', icon: '⭐' },
+  { name: 'Bronze',   min: 500,  cls: 'level-bronze',   icon: '🥉' },
+  { name: 'Silver',   min: 1500, cls: 'level-silver',   icon: '🥈' },
+  { name: 'Gold',     min: 3000, cls: 'level-gold',     icon: '🥇' },
+  { name: 'Platinum', min: 7500, cls: 'level-platinum', icon: '🏆' },
+];
+
+const MAX_BAR_PTS = 7500;
+
+// Benefits assigned by level (cost threshold matches level min)
+// Within each array, order doesn't matter — we sort by pts desc at render time
+const BENEFITS = {
+  Standard: [
+    { name: 'Brindes datas comemorativas (por brinde)', pts: 10 },
+  ],
+  Bronze: [
+    { name: 'Mini projetor',                            pts: 500 },
+    { name: 'Bolsa de estudo para o programa bilíngue', pts: 750 },
+    { name: 'Brinde enxoval do professor',              pts: 1000 },
+    { name: 'Consultoria de Mkt Edify',                 pts: 1000 },
+    { name: 'Consultoria Gestão Financeira Edify',      pts: 1000 },
+  ],
+  Silver: [
+    { name: 'Consultoria de Marketing Spaço In',                    pts: 1500 },
+    { name: 'Certificação de Cambridge para o 9º ano (por aluno)',  pts: 1500 },
+    { name: 'Kit Ambientação Edify',                                pts: 1500 },
+    { name: 'Placa de rua parceria Edify',           pts: 2000 },
+  ],
+  Gold: [
+    { name: 'Nova Sala Edify',                       pts: 3500 },
+    { name: 'Palestra presencial para responsáveis', pts: 7000 },
+    { name: 'Sessão de treinamento presencial',      pts: 7000 },
+  ],
+  Platinum: [
+    { name: 'Consultoria presencial de relançamento do programa', pts: 8000 },
+    { name: 'Convite VIP para 2 dias no RJ + Edify Cast',         pts: 10000 },
+    { name: 'Patrocínio 5k',                                      pts: 10000 },
+    { name: 'Laboratório de informática ambientado + tablets',     pts: 11000 },
+    { name: 'Bett SP',                                            pts: 14000 },
+    { name: 'Patrocínio 10k',                                     pts: 20000 },
+    { name: 'Patrocínio de 20k',                                  pts: 40000 },
+    { name: 'Viagem para conferência internacional',              pts: 45000 },
+    { name: 'Gratuidade de intercâmbio para aluno ou professor',  pts: 70000 },
+    { name: 'Intercâmbio de formação para gestores (1 pessoa)',   pts: 80000 },
+  ],
+};
+
+const LEVEL_DESCS = {
+  Standard: 'O ponto de partida da sua jornada Edify',
+  Bronze:   'Vantagens que acompanham seu crescimento',
+  Silver:   'Benefícios relevantes para uma parceria estratégica',
+  Gold:     'Benefícios que te tornam referência de excelência',
+  Platinum: 'Vantagens exclusivas para quem dita as tendências ',
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  organico: false,
+  inorganica: 0,
+  vigencia: null,
+  vigAnos: 2,
+  bonus: 0,
+};
+
+let currentVigencia = null;
+
+// ============================================================
+// SCORING
+// ============================================================
+function calcBase() {
+  let pts = 0;
+  if (state.organico) pts += 1000;
+  pts += (state.inorganica || 0) * 2000;
+  if (state.vigencia === 1) pts += 500;
+  if (state.vigencia === 'n') {
+    const anos = Math.max(2, state.vigAnos || 2);
+    pts += (anos - 1) * 1000 + 500;
+  }
+  return pts;
+}
+
+function calcTotal() {
+  return Math.round(calcBase() * (1 + (state.bonus || 0) / 100));
+}
+
+function getLevel(pts) {
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (pts >= LEVELS[i].min) return i;
+  }
+  return 0;
+}
+
+function fmt(n) { return n.toLocaleString('pt-BR'); }
+
+// ============================================================
+// TOGGLES
+// ============================================================
+function toggleCheck(id) {
+  if (id === 'organico') {
+    const row = document.getElementById('organico-row');
+    if (row.classList.contains('disabled')) return;
+    state.organico = !state.organico;
+    row.classList.toggle('checked', state.organico);
+  }
+  update();
+}
+
+function updateOrganicoLock() {
+  const locked = (state.inorganica || 0) > 0;
+  const row = document.getElementById('organico-row');
+  const hint = document.getElementById('organico-hint');
+  if (locked) {
+    if (state.organico) {
+      state.organico = false;
+      row.classList.remove('checked');
+    }
+    row.classList.add('disabled');
+    hint.style.display = 'block';
+  } else {
+    row.classList.remove('disabled');
+    hint.style.display = 'none';
+  }
+}
+
+function setVigencia(type) {
+  currentVigencia = (currentVigencia === type) ? null : type;
+  state.vigencia = currentVigencia;
+  document.getElementById('vig-1-row').classList.toggle('active', currentVigencia === 1);
+  document.getElementById('vig-n-row').classList.toggle('active', currentVigencia === 'n');
+  update();
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function makeBenefitRow(b, dotColor, tagBg, tagColor) {
+  return `<div class="benefit-item fade-in">
+    <div class="benefit-item-name">
+      <div class="benefit-dot" style="background:${dotColor}"></div>
+      ${b.name}
+    </div>
+    <span class="benefit-pts-tag" style="background:${tagBg};color:${tagColor}">${fmt(b.pts)} pts</span>
+  </div>`;
+}
+
+function makeDivider(icon, name) {
+  return `<div class="section-divider">${icon} ${name}</div>`;
+}
+
+function update() {
+  updateOrganicoLock();
+
+  const base  = calcBase();
+  const total = calcTotal();
+  const bonus = state.bonus || 0;
+  const bonusAmt = total - base;
+  const lvlIdx = getLevel(total);
+  const level  = LEVELS[lvlIdx];
+  const nextLv = LEVELS[lvlIdx + 1] || null;
+
+  // Saldo
+  document.getElementById('saldo-value').textContent = fmt(total);
+  document.getElementById('base-pts-display').textContent  = `Base: ${fmt(base)} pts`;
+  document.getElementById('bonus-pts-display').textContent = `Bônus: +${fmt(bonusAmt)} pts`;
+  document.getElementById('bonus-pct-display').textContent = `+${bonus}%`;
+  document.getElementById('bonus-pts-display').style.display = bonus > 0 ? '' : 'none';
+  document.getElementById('bonus-pct-display').style.display = bonus > 0 ? '' : 'none';
+
+  // Level card
+  const card = document.getElementById('level-card');
+  card.className = `level-card ${level.cls}`;
+  document.getElementById('level-name').textContent = level.name;
+  document.getElementById('level-badge').textContent = `${level.icon} Nível Atual`;
+  document.getElementById('level-icon').textContent  = level.icon;
+  document.getElementById('level-desc').textContent  = LEVEL_DESCS[level.name];
+
+  // Progress markers
+  document.getElementById('prog-markers').innerHTML = LEVELS.map((l, i) => {
+    const cls = i < lvlIdx ? 'passed' : i === lvlIdx ? 'active' : '';
+    return `<div class="prog-marker ${cls}">
+      <div class="m-icon">${l.icon}</div>
+      <div class="m-name">${l.name}</div>
+      <div class="m-pts">${fmt(l.min)} pts</div>
+    </div>`;
+  }).join('');
+
+  // Progress bar — snaps exactly to the center of the current level marker.
+  // Markers use justify-content:space-between with 5 items each 20% wide,
+  // so their centers land at: 10%, 30%, 50%, 70%, 90%.
+  // Formula: 10 + lvlIdx * 20  (generalised: 10 + lvlIdx * 80/(n-1))
+  // At Platinum (max level) fill to 100% so the bar looks complete.
+  const bar = document.getElementById('prog-bar');
+  const n = LEVELS.length;
+  const pct = !nextLv ? 100 : 10 + lvlIdx * (80 / (n - 1));
+
+  bar.style.width = pct + '%';
+  bar.style.background = lvlIdx === LEVELS.length - 1
+    ? 'linear-gradient(90deg, #7c3aed, var(--accent))'
+    : 'linear-gradient(90deg, var(--primary), var(--sky))';
+
+  document.getElementById('prog-current').textContent = `${fmt(total)} pts`;
+  if (!nextLv) {
+    document.getElementById('prog-next-info').textContent = '🏆 Nível máximo atingido!';
+  } else {
+    const faltam = nextLv.min - total;
+    document.getElementById('prog-next-info').textContent =
+      `Faltam ${fmt(faltam)} pts para ${nextLv.icon} ${nextLv.name} (${fmt(nextLv.min)} pts)`;
+  }
+
+  // --- Next level unlocks ---
+  // Shows ONLY the immediate next level (as per title "Próximo Nível")
+  const nextCard = document.getElementById('next-level-card');
+  const nextList = document.getElementById('next-benefits-list');
+  const nextTag  = document.getElementById('next-level-tag');
+
+  if (!nextLv) {
+    nextCard.style.display = 'none';
+  } else {
+    nextCard.style.display = '';
+    nextTag.textContent = `${nextLv.icon} ${nextLv.name}`;
+
+    const benefits = (BENEFITS[nextLv.name] || []).slice().sort((a, b) => b.pts - a.pts);
+    nextList.innerHTML = benefits.length
+      ? benefits.map(b => makeBenefitRow(b, 'var(--secondary)', 'rgba(255,39,38,0.1)', 'var(--secondary)')).join('')
+      : '<div class="no-benefits">Nenhum benefício adicional</div>';
+  }
+
+  // --- Current benefits ---
+  // Descending order: Platinum → Gold → Silver → Bronze → Standard
+  // Items within each level sorted by pts desc.
+  // If a benefit costs more than the current point balance → shown in red (unaffordable).
+  const currentList = document.getElementById('current-benefits-list');
+  const currentTag  = document.getElementById('current-level-tag');
+  currentTag.textContent = `${level.icon} ${level.name}`;
+
+  const levelsAvailable = LEVELS.slice(0, lvlIdx + 1).reverse();
+  let html = '';
+  levelsAvailable.forEach(lv => {
+    const benefits = (BENEFITS[lv.name] || []).slice().sort((a, b) => b.pts - a.pts);
+    if (!benefits.length) return;
+    html += makeDivider(lv.icon, lv.name);
+    benefits.forEach(b => {
+      const canAfford = b.pts <= total;
+      const dotColor  = canAfford ? 'var(--teal)'              : 'var(--secondary)';
+      const tagBg     = canAfford ? 'rgba(0,170,158,0.15)'     : 'rgba(255,39,38,0.10)';
+      const tagColor  = canAfford ? 'var(--teal)'              : 'var(--secondary)';
+      const rowStyle  = canAfford ? ''                          : 'opacity:0.85;';
+      html += `<div class="benefit-item fade-in" style="${rowStyle}">
+        <div class="benefit-item-name">
+          <div class="benefit-dot" style="background:${dotColor}"></div>
+          <span style="color:${canAfford ? 'inherit' : 'var(--secondary)'}">${b.name}</span>
+        </div>
+        <span class="benefit-pts-tag" style="background:${tagBg};color:${tagColor}">${fmt(b.pts)} pts</span>
+      </div>`;
+    });
+  });
+
+  currentList.innerHTML = html || '<div class="no-benefits">Acumule pontos para desbloquear benefícios</div>';
+}
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+document.getElementById('inorganica').addEventListener('input', e => {
+  state.inorganica = Math.max(0, parseInt(e.target.value) || 0);
+  update();
+});
+
+document.getElementById('vig-anos').addEventListener('input', e => {
+  state.vigAnos = Math.max(2, parseInt(e.target.value) || 2);
+  const pts = (state.vigAnos - 1) * 1000 + 500;
+  document.getElementById('vig-n-pts').textContent = `+${fmt(pts)} pts`;
+  update();
+});
+
+document.getElementById('vig-anos').addEventListener('click', e => {
+  e.stopPropagation();
+  if (currentVigencia !== 'n') setVigencia('n');
+});
+
+document.getElementById('bonus').addEventListener('input', e => {
+  state.bonus = Math.max(0, parseFloat(e.target.value) || 0);
+  update();
+});
+
+// ============================================================
+// SCHOOL NAME
+// ============================================================
+let schoolName = '';
+
+function applySchoolName(name) {
+  schoolName = name.trim();
+  const el = document.getElementById('level-school');
+  if (schoolName) {
+    el.textContent = schoolName;
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+let pendingFormat = 'png';
+
+function triggerDownload(format) {
+  pendingFormat = format;
+  const modal = document.getElementById('school-modal');
+  const title = document.getElementById('modal-title');
+  const confirmBtn = document.getElementById('modal-confirm-btn');
+  const input = document.getElementById('school-name-input');
+
+  title.textContent = format === 'pdf' ? '📄 Baixar PDF' : '🖼 Baixar Imagem';
+  confirmBtn.textContent = format === 'pdf' ? 'Gerar PDF' : 'Gerar imagem';
+  confirmBtn.className = 'modal-btn confirm' + (format === 'pdf' ? ' pdf' : '');
+  input.value = schoolName; // pre-fill with last used name
+  modal.classList.add('open');
+  setTimeout(() => input.focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('school-modal').classList.remove('open');
+}
+
+function confirmDownload() {
+  const name = document.getElementById('school-name-input').value;
+  applySchoolName(name);
+  closeModal();
+
+  if (pendingFormat === 'pdf') {
+    executePdfDownload();
+  } else {
+    executePngDownload();
+  }
+}
+
+// Close modal on overlay click
+document.getElementById('school-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Allow Enter key to confirm
+document.getElementById('school-name-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') confirmDownload();
+  if (e.key === 'Escape') closeModal();
+});
+
+// ============================================================
+// DOWNLOAD — PNG
+// ============================================================
+function executePngDownload() {
+  const btn = document.getElementById('download-png-btn');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '⏳ Gerando...';
+  btn.disabled = true;
+
+  html2canvas(document.getElementById('dashboard'), {
+    scale: 2,
+    backgroundColor: '#F2F2F2',
+    useCORS: true,
+    logging: false,
+  }).then(canvas => {
+    const a = document.createElement('a');
+    const slug = schoolName ? schoolName.replace(/\s+/g, '-').toLowerCase() + '-' : '';
+    a.download = `simulacao-edify-${slug}${Date.now()}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  }).finally(() => {
+    btn.innerHTML = orig;
+    btn.disabled = false;
+  });
+}
+
+// ============================================================
+// DOWNLOAD — PDF
+// ============================================================
+function executePdfDownload() {
+  const btn = document.getElementById('download-pdf-btn');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '⏳ Gerando...';
+  btn.disabled = true;
+
+  html2canvas(document.getElementById('dashboard'), {
+    scale: 2,
+    backgroundColor: '#F2F2F2',
+    useCORS: true,
+    logging: false,
+  }).then(canvas => {
+    const { jsPDF } = window.jspdf;
+    const imgData = canvas.toDataURL('image/png');
+
+    // A4 dimensions in mm
+    const pageW = 210;
+    const pageH = 297;
+    const margin = 15;
+    const usableW = pageW - margin * 2;
+
+    // Scale image to fit usable width
+    const imgW = canvas.width;
+    const imgH = canvas.height;
+    const ratio = imgH / imgW;
+    const drawW = usableW;
+    const drawH = drawW * ratio;
+
+    // Allow multiple pages if content is taller than one page
+    const usableH = pageH - margin * 2;
+    const pdf = new jsPDF({ orientation: drawH > usableH ? 'portrait' : 'portrait', unit: 'mm', format: 'a4' });
+
+    let yPos = margin;
+    let remainingH = drawH;
+    let sourceY = 0;
+
+    while (remainingH > 0) {
+      const sliceH = Math.min(remainingH, usableH);
+      const sliceProportion = sliceH / drawH;
+      const sourceSliceH = imgH * sliceProportion;
+
+      // Create a slice canvas
+      const sliceCanvas = document.createElement('canvas');
+      sliceCanvas.width = imgW;
+      sliceCanvas.height = sourceSliceH;
+      const ctx = sliceCanvas.getContext('2d');
+      ctx.drawImage(canvas, 0, sourceY, imgW, sourceSliceH, 0, 0, imgW, sourceSliceH);
+
+      if (sourceY > 0) pdf.addPage();
+      pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', margin, margin, drawW, sliceH);
+
+      sourceY += sourceSliceH;
+      remainingH -= sliceH;
+      yPos = margin;
+    }
+
+    const slug = schoolName ? schoolName.replace(/\s+/g, '-').toLowerCase() + '-' : '';
+    pdf.save(`simulacao-edify-${slug}${Date.now()}.pdf`);
+  }).finally(() => {
+    btn.innerHTML = orig;
+    btn.disabled = false;
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+update();
+</script>
+<!-- School Name Modal -->
+<div class="modal-overlay" id="school-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">📥 Baixar Simulação</div>
+    <div class="modal-subtitle">Informe o nome da escola para personalizar o relatório. Este campo é opcional.</div>
+    <label class="modal-label" for="school-name-input">Nome da escola</label>
+    <input class="modal-input" type="text" id="school-name-input" placeholder="Ex: Colégio São Paulo" maxlength="60" autocomplete="off">
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
+      <button class="modal-btn confirm" id="modal-confirm-btn" onclick="confirmDownload()">Gerar imagem</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
